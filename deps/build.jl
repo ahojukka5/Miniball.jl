@@ -12,20 +12,21 @@ cd(dirname(@__FILE__)) do
     builddir = joinpath(BinDeps.builddir(libminiball), libminiball.name)
     srcdir = joinpath(BinDeps.srcdir(libminiball),miniball)
     libdir = joinpath(BinDeps.depsdir(libminiball),"usr","lib")
+    downloaddir = joinpath(BinDeps.srcdir(libminiball),"downloads")    
 
     run(`wget http://www.inf.ethz.ch/personal/gaertner/miniball/Miniball.hpp`)
-    run(`mv Miniball.hpp Miniball.cpp`)
+    run(`cp Miniball.hpp Miniball.cpp`)
 
     provides(SimpleBuild,
              (@build_steps begin
                 CreateDirectory(builddir)
                 CreateDirectory(libdir)
+                CreateDirectory(downloaddir)
+                `mv $here/Miniball.hpp $here/Miniball.cpp $downloaddir`
                 @build_steps begin
                   ChangeDirectory(builddir)
-                  `cp ../../Miniball.cpp ./`  
-                  `g++ -shared -fPIC Miniball.cpp -o libMiniball.so`
+                  `g++ -shared -fPIC $downloaddir/Miniball.cpp -o libMiniball.so`
                   `cp libMiniball.so $libdir`
-                  `rm $here/Miniball.cpp`
                 end
               end),
              libminiball, os = :Unix)
