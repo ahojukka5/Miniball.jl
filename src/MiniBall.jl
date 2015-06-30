@@ -38,8 +38,8 @@ N** allocate_c_arr(int length, int width, N * juliaArr) {
 template <typename N>
 void free_c_array(int length, N** c_arr) {
     for (int i = 0; i < length; i++)
-        free(c_arr[i]);
-    free(c_arr);
+        delete[] c_arr[i];
+    delete[] c_arr;
 }
 
 /*
