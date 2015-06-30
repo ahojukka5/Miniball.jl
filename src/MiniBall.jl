@@ -9,10 +9,6 @@ cxxinclude(path_to_miniball)
 cxx"""
 #include <iostream>
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c6d32226ac4a1a9c26a65b377201f40039a33571
 /*
  * Function for allocating array for miniball
  *
@@ -68,15 +64,12 @@ double calc_mini(int n, int d, T**arr, T *outputArr) {
 allocate_jArr_to_cArr(length, width, juliaArr) = @cxxnew allocate_c_arr(length, width, juliaArr)
 calc_miniball(length, width, arr, outputArr) = @cxx calc_mini(length, width, arr, outputArr)
 free_cArr(length, c_arr) = @cxx free_c_array(length, c_arr)
-<<<<<<< HEAD
 
-function miniball{T<:Real}(arr::Array{T, 2})
-=======
+
 """
 Smallest enclosing sphere
 """
 function miniball{T}(arr::Array{T, 2})
->>>>>>> c6d32226ac4a1a9c26a65b377201f40039a33571
     n, d = size(arr)
     output_arr = zeros(d)
     c_arr = allocate_jArr_to_cArr(n, d, pointer(arr'))
