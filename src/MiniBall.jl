@@ -9,6 +9,13 @@ cxxinclude(path_to_miniball)
 cxx"""
 #include <iostream>
 
+
+/*
+ * Function for allocating array for miniball
+ *
+ * Since arrays in Julia are comprehended as 1D arrays when trasported into
+ * C++ (I guess) we'll allocate n dimensional array for miniball
+ */ 
 template <typename N>
 N** allocate_c_arr(int length, int width, N * juliaArr) {
     N** output_arr = new N*[length];
@@ -24,6 +31,11 @@ N** allocate_c_arr(int length, int width, N * juliaArr) {
     return output_arr;
 }
 
+/*
+ * Free allocated array
+ *
+ * Just in case...  
+ */
 template <typename N>
 void free_c_array(int length, N** c_arr) {
     for (int i = 0; i < length; i++)
@@ -31,6 +43,9 @@ void free_c_array(int length, N** c_arr) {
     free(c_arr);
 }
 
+/*
+ * Calculates smallest enclosing sphere
+ */
 template <typename T>
 double calc_mini(int n, int d, T**arr, T *outputArr) {
     double radius;
@@ -49,7 +64,9 @@ double calc_mini(int n, int d, T**arr, T *outputArr) {
 allocate_jArr_to_cArr(length, width, juliaArr) = @cxx allocate_c_arr(length, width, juliaArr)
 calc_miniball(length, width, arr, outputArr) = @cxx calc_mini(length, width, arr, outputArr)
 free_cArr(length, c_arr) = @cxx free_c_array(length, c_arr)
-
+"""
+Smallest enclosing sphere
+"""
 function miniball{T}(arr::Array{T, 2})
     n, d = size(arr)
     output_arr = zeros(d)
