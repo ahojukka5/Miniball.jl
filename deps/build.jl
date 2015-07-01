@@ -4,6 +4,10 @@
 cd(dirname(@__FILE__)) do
     here = dirname(@__FILE__)
     run(`wget http://www.inf.ethz.ch/personal/gaertner/miniball/Miniball.hpp`)
-    run(`mkdir $here/downloads`)
+    try
+      run(`mkdir $here/downloads`)
+    end
     run(`mv Miniball.hpp $here/downloads`)
+    run(`wget http://www.inf.ethz.ch/personal/gaertner/miniball/license.html`)
+    run(`mv license.html $here/downloads`)
 end
