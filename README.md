@@ -1,5 +1,16 @@
 # MiniBall
 
-[![Build Status](https://travis-ci.org/ovainola/MiniBall.jl.svg?branch=master)](https://travis-ci.org/ovainola/MiniBall.jl)
-=======
-# MiniBall.jl
+```julia
+julia> using MiniBall
+
+julia> miniball([1.0 0.0; 0.0 1.0])
+([0.5,0.5],0.7071067811865476)
+
+julia> miniball([-1.0 0.0; 1.0 0.0 ; 0.0 1.0 ; 0.0 -1.0])
+([0.0,0.0],1.0)
+
+julia> miniball(rand(1000000,3))
+([0.503497331212874,0.4966413939942441,0.5004940446765603],0.8576670553673171)
+
+julia> 
+```
