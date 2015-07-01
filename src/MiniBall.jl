@@ -21,8 +21,8 @@ N** allocate_c_arr(int length, int width, N * juliaArr) {
     int index = 0;
     for (int i = 0; i < length; i++) {
         N* inner_arr = new N[width];
-        for (int j = 1; j < (width + 1); j++) {
-            inner_arr[j - 1] = juliaArr[index];
+        for (int j = 0; j < width; j++) {
+            inner_arr[j] = juliaArr[index];
             index += 1;
         }
         output_arr[i] = inner_arr;
