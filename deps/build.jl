@@ -3,11 +3,17 @@
 
 cd(dirname(@__FILE__)) do
     here = dirname(@__FILE__)
-    run(`wget http://www.inf.ethz.ch/personal/gaertner/miniball/Miniball.hpp`)
     try
       run(`mkdir $here/downloads`)
     end
-    run(`mv Miniball.hpp $here/downloads`)
-    run(`wget http://www.inf.ethz.ch/personal/gaertner/miniball/license.html`)
-    run(`mv license.html $here/downloads`)
+    try
+      run(`mkdir $here/usr`)
+      run(`mkdir $here/usr/include`)
+    end
+    cur = pwd()
+    cd("$here/downloads")
+    run(`wget -r --no-parent -nH --cut-dirs=2 -e robots=off --reject='index.html*'
+          http://www.inf.ethz.ch/personal/gaertner/miniball/`)
+    run(`cp miniball/Miniball.hpp $here/usr/include`)
+    cd(cur)
 end

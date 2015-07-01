@@ -6,7 +6,7 @@ using Cxx
 
 export miniball
 
-const path_to_miniball = joinpath(Pkg.dir("MiniBall"),"deps/downloads/Miniball.hpp")
+const path_to_miniball = joinpath(Pkg.dir("MiniBall"),"deps/usr/include/Miniball.hpp")
 cxxinclude(path_to_miniball)
 
 cxx"""
