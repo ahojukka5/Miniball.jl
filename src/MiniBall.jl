@@ -1,3 +1,6 @@
+# This file is a part of JuliaFEM/MiniBall.jl.
+# License is MIT: see https://github.com/JuliaFEM/MiniBall.jl/blob/master/LICENSE.md
+
 module MiniBall
 using Cxx
 
@@ -14,7 +17,7 @@ cxx"""
  *
  * Since arrays in Julia are comprehended as 1D arrays when trasported into
  * C++ (I guess) we'll allocate n dimensional array for miniball
- */ 
+ */
 template <typename N>
 N** allocate_c_arr(int length, int width, N * juliaArr) {
     N** output_arr = new N*[length];
@@ -33,7 +36,7 @@ N** allocate_c_arr(int length, int width, N * juliaArr) {
 /*
  * Free allocated array
  *
- * Just in case...  
+ * Just in case...
  */
 template <typename N>
 void free_c_array(int length, N** c_arr) {
@@ -48,11 +51,11 @@ void free_c_array(int length, N** c_arr) {
 template <typename T>
 double calc_mini(int n, int d, T**arr, T *outputArr) {
     double radius;
-    typedef T* const* PointIterator; 
+    typedef T* const* PointIterator;
     typedef const T* CoordIterator;
     typedef Miniball::Miniball <Miniball::CoordAccessor<PointIterator, CoordIterator> > MB;
     MB mb (n, arr, arr+d);
-    const T* center = mb.center(); 
+    const T* center = mb.center();
     for(int i=0; i<n; ++i, ++center) {
         outputArr[i] = *center;
     }
