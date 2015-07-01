@@ -14,3 +14,6 @@ julia> miniball(rand(1000000,3))
 
 julia> 
 ```
+Here is the original Miniball documentation http://www-oldurls.inf.ethz.ch/personal/gaertner/miniball.html
+
+MiniBall.jl is wrapped using [Cxx.jl](https://github.com/Keno/Cxx.jl)
