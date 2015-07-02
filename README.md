@@ -1,6 +1,6 @@
 [![JuliaFEMLogo](https://github.com/JuliaFEM/JuliaFEM.jl/blob/master/docs/logo/JuliaFEMLogo_128x128.png)](http://www.juliafem.org) 
 
-# MiniBall is a part of JuliaFEM
+# MiniBall.jl is a part of JuliaFEM
 
 ```julia
 julia> using MiniBall
@@ -20,5 +20,6 @@ julia> miniball(rand(1000000,3))
 julia> 
 ```
 Here is the original Miniball documentation http://www-oldurls.inf.ethz.ch/personal/gaertner/miniball.html
+[![Miniball log](http://www-oldurls.inf.ethz.ch/personal/gaertner/miniball/mb.gif)](http://www-oldurls.inf.ethz.ch/personal/gaertner/miniball.html)
 
 MiniBall.jl is wrapped using [Cxx.jl](https://github.com/Keno/Cxx.jl)
