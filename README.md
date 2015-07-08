@@ -2,6 +2,12 @@
 
 # MiniBall.jl is a part of JuliaFEM
 
+## To install MiniBall.jl
+1. First follow [Cxx.jl#installation](https://github.com/Keno/Cxx.jl#installation)
+2. Open your new julia REPL and use commands: `Pkg.clone("https://github.com/JuliaFEM/MiniBall.jl.git")` and `Pkg.build("MiniBall")`. 
+
+## Some examples of the usage 
+
 ```julia
 julia> using MiniBall
 
