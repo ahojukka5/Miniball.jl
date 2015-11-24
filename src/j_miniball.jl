@@ -23,7 +23,9 @@ Functions only purpose is to reduce the used memory
 function currier(dim)
     ids = collect(2:dim)
     function inner(fsize)
-        return filter(x-> x < fsize, ids)
+        return_arr = filter(x-> x < fsize, ids)
+        not_empty = size(return_arr)[1] == 0 ? true : false
+        return return_arr, not_empty
     end
     return inner
 end
@@ -52,7 +54,7 @@ Miniball container
     f::Array{F, 1}
     v::Array{F, 2}
     a::Array{F, 2}
-    loop_list::Function
+    idx_list::Function
  
    Miniball(len, dim, points) = new(dim,                        # Dimensions
                                     len,                        # Number of points
@@ -294,8 +296,9 @@ pivot element.
     container.v[fsize, :] = pivot - q0
     v = container.v
     # compute the a_{fsize,i}, i< fsize
-    loop_list = container.loop_list(fsize)
-    for i in loop_list
+    idx_list, not_empty = container.idx_list(fsize)
+    dim_arr = collect(1:d)
+    for i in idx_list
         container.a[fsize, i] = 0.0;
         for j = 1:d
             container.a[fsize, i] += v[i, j] * v[fsize, j]
@@ -304,7 +307,7 @@ pivot element.
     end
     a = container.a
     # update v_fsize to Q_fsize-\bar{Q}_fsize
-    for i in loop_list
+    for i in idx_list
         for j=1:d
             container.v[fsize, j] -= a[fsize, i] * v[i, j]
         end
