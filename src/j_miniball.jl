@@ -100,7 +100,7 @@ Example
  function j_miniball{F<:AbstractFloat}(points::Array{F, 2}; timeit=false)
      arr_dim, arr_len = size(points)
      ball = Miniball(arr_dim, arr_len, points)
-     ball.center[:] = ball.points[1, :]
+     ball.center[:] = 0.0#ball.points[1, :]
      if timeit
         @time miniball_pivot(ball)
      else 
@@ -116,10 +116,13 @@ from B. Gaertner, Fast and Robust Smallest Enclosing Balls, ESA 1999,
 as a Algorithm 2: pivot_mb
 """
 function miniball_pivot(container::Miniball)
-     old_sqr_r = calculate_miniball(container)
-     while (old_sqr_r < container.squared_radius)
-         old_sqr_r = calculate_miniball(container)
-     end
+    iter = 0
+    old_sqr_r = calculate_miniball(container, iter)
+    iter += 1
+    while (old_sqr_r < container.squared_radius)
+        old_sqr_r = calculate_miniball(container, iter)
+        iter += 1
+    end
  end
  
 """
@@ -127,7 +130,7 @@ Function for creating the support vector. Function searches the most furthest
 point from the current center; the pivot point. Pivot point is added into support
 vector, which again is used to create the miniball.
 """
- function calculate_miniball(container::Miniball)
+ function calculate_miniball(container::Miniball, iter)
      dim   = container.dim
      len   = container.len
      arr_squared_r = container.squared_radius
@@ -138,7 +141,6 @@ vector, which again is used to create the miniball.
      old_sqr_r = container.squared_radius
      max_e = 0.0
      c = vec(container.center)
-     
      for k=1:len
          p = vec(points[k, :])
          e = -arr_squared_r
@@ -154,19 +156,19 @@ vector, which again is used to create the miniball.
          if !(pivot in support_vector)
              @assert container.fsize == 1
              if push!(pivot, container)
-                 miniball_support_points(container, support_vector)
+                 miniball_support_points(container, pivot)
                  container.fsize -= 1
                  pivot_move_to_front(pivot, container)
              end
          end
      end
-     old_sqr_r
+    old_sqr_r
 end
 
 """
 Recursive function for creating a miniball using the support vector
 """
- function miniball_support_points{F<:AbstractFloat}(container::Miniball, support_vector::Array{Array{F, 1}, 1})
+ function miniball_support_points{F<:AbstractFloat}(container::Miniball, end_support_vector::Array{F, 1})
     dim   = container.dim
     fsize = container.fsize
     ssize = container.ssize
@@ -175,17 +177,22 @@ Recursive function for creating a miniball using the support vector
     squared_radius = container.squared_radius
     
     @assert fsize == ssize
-    if ((fsize) == dim+2) 
+    if fsize == dim + 2
         return 
     end
-    for (idx, support_point) in enumerate(support_vector)
-        if inside_current_ball(support_point, center, squared_radius, dim) 
+    id_ = 1
+    for (idx, support_point) in enumerate(container.support_vector)
+        if support_point == end_support_vector
+            break
+        end
+        if inside_current_ball(support_point, container.center, container.squared_radius, dim) 
             if push!(support_point, container)
-                miniball_support_points(container, container.support_vector[1:idx]) 
+                miniball_support_points(container, support_point) 
                 container.fsize -= 1
                 support_points_move_to_front(container, support_point, idx) 
             end
         end
+        id_ += 1
     end
  end
  
@@ -206,7 +213,7 @@ Appends a pivot point to the front of the support vector
 function pivot_move_to_front{F<:AbstractFloat}(pivot::Array{F, 1}, container::Miniball)
     dim = container.dim
     unshift!(container.support_vector, vec(pivot))
-    if length(container.support_vector) == dim + 2
+    if length(container.support_vector) == dim + 3
         container.fsize -= 1
     end
  end
@@ -234,7 +241,7 @@ from section 3. The Primitive Operation and after that.
 function push!{F<:AbstractFloat}(pivot::Array{F, 1}, container::Miniball)
     dim = container.dim
     return_value = true
-    fsize = container.fsize    
+    fsize = container.fsize
      if fsize == 1
         push_fsize_zero(pivot, container)
      else
@@ -258,11 +265,9 @@ fsize == 1, insert pivot element to q0 and c vectors
 """
 function push_fsize_zero(pivot::Array{Float64, 1}, container::Miniball)
      d = container.dim
-     q0 = container.q0
-     c = container.c
      for i = 1:d
-         q0[i] = pivot[i]
-         c[1, i] = q0[i]
+         container.q0[i] = pivot[i]
+         container.c[1, i] = container.q0[i]
      end
      container.arr_squared_r[1] = 0.0
  end
@@ -278,40 +283,39 @@ pivot element.
 
     # Arrayt
     c = container.c
-    v = container.v
-    a = container.a
     z = container.z
-    f = container.f
+
     arr_squared_r = container.arr_squared_r
     fsize = container.fsize
     squared_radius = container.squared_radius
     return_val = true
     
     # set v_fsize to Q_fsize
-    v[fsize, :] = pivot - q0
-    
+    container.v[fsize, :] = pivot - q0
+    v = container.v
     # compute the a_{fsize,i}, i< fsize
     loop_list = container.loop_list(fsize)
     for i in loop_list
-        a[fsize, i] = 0.0;
+        container.a[fsize, i] = 0.0;
         for j = 1:d
-            a[fsize, i] += v[i, j] * v[fsize, j]
+            container.a[fsize, i] += v[i, j] * v[fsize, j]
         end
-        a[fsize, i] *= 2 / z[i]
+        container.a[fsize, i] *= 2 / z[i]
     end
+    a = container.a
     # update v_fsize to Q_fsize-\bar{Q}_fsize
     for i in loop_list
         for j=1:d
-            v[fsize, j] -= a[fsize, i] * v[i, j]
+            container.v[fsize, j] -= a[fsize, i] * v[i, j]
         end
     end
     # compute z_fsize
-    z[fsize] = 0.0;
+    container.z[fsize] = 0.0;
     for j=1:d
-        z[fsize] += mb_sqr(v[fsize, j])
+        container.z[fsize] += mb_sqr(container.v[fsize, j])
     end
-    z[fsize] *= 2
-
+    container.z[fsize] *= 2
+    z = container.z
     # reject push if z_fsize too small
     if z[fsize] < epsilon*squared_radius
         return_val = false
@@ -321,11 +325,12 @@ pivot element.
         for i=1:d
             e += mb_sqr(pivot[i]-c[fsize-1, i])
         end
-        f[fsize] = e / z[fsize]
+        container.f[fsize] = e / z[fsize]
+        f = container.f
         for i=1:d
-            c[fsize, i] = c[fsize-1, i] + f[fsize] * v[fsize, i]
+            container.c[fsize, i] = c[fsize-1, i] + f[fsize] * v[fsize, i]
         end     
-        arr_squared_r[fsize] = arr_squared_r[fsize-1] + e * f[fsize] / 2
+        container.arr_squared_r[fsize] = arr_squared_r[fsize-1] + e * f[fsize] / 2
     end
     return_val
  end
