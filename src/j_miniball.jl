@@ -5,7 +5,8 @@
 # 
 #   This miniball a pure julia implementations of C++ miniball presented in 
 #   https://www.inf.ethz.ch/personal/gaertner/miniball/Miniball.hpp. This implementation
-#   is however about 3-8 times slower compared to the C++ code, but has only approximately 
+#   is however about 2-5 times slower compared to the C++ code depending on the
+#   number of points and the size of the dimensions, but has only approximately 
 #   1/2 number of lines.    
 #
 #   The original C++ code is published under GNU General Public License
