@@ -8,12 +8,14 @@
 #   is however about 3-8 times slower compared to the C++ code, but has only approximately 
 #   1/2 number of lines.    
 #
+#   The original C++ code is published under GNU General Public License
+#
 
 """
 Calcualtes the square of a float; r^2
 """
-function mb_sqr{F<:AbstractFloat}(r::F)
-    return r * r
+function pow_2{F<:AbstractFloat}(r::F)
+    return r ^ 2
 end
 
 """
@@ -143,11 +145,11 @@ vector, which again is used to create the miniball.
      old_sqr_r = container.squared_radius
      max_e = 0.0
      c = vec(container.center)
-     for k=1:len
+     @inbounds @simd for k=1:len
          p = vec(points[k, :])
          e = -arr_squared_r
-         for l=1:dim
-            e += mb_sqr(p[l] - c[l])
+         @inbounds for l=1:dim
+            e += pow_2(p[l] - c[l])
          end
          if e > max_e
              max_e = e
@@ -183,6 +185,7 @@ Recursive function for creating a miniball using the support vector
         return 
     end
     id_ = 1
+    # @fastmath @inbounds 
     for (idx, support_point) in enumerate(container.support_vector)
         if support_point == end_support_vector
             break
@@ -215,8 +218,8 @@ Appends a pivot point to the front of the support vector
 function pivot_move_to_front{F<:AbstractFloat}(pivot::Array{F, 1}, container::Miniball)
     dim = container.dim
     unshift!(container.support_vector, vec(pivot))
-    if length(container.support_vector) == dim + 3
-        container.fsize -= 1
+    if length(container.support_vector) == (dim + 2)
+        pop!(container.support_vector)
     end
  end
  
@@ -228,7 +231,7 @@ Checks, if given point is already inside the current miniball
     p = coords
     e = -squared_radius
     for i=1:dim
-        e += mb_sqr(p[i] - c[i])
+        e += pow_2(p[i] - c[i])
     end
     return e > 0.0
  end
@@ -244,22 +247,22 @@ function push!{F<:AbstractFloat}(pivot::Array{F, 1}, container::Miniball)
     dim = container.dim
     return_value = true
     fsize = container.fsize
-     if fsize == 1
-        push_fsize_zero(pivot, container)
-     else
+    
+    if fsize == 1
+        return_value = push_fsize_zero(pivot, container)
+    else
         return_value = push_fsize_not_zero(pivot, container)
-     end
-     if return_value == true
+    end
+    
+    if return_value == true
         for i=1:dim
             container.center[i] = container.c[fsize, i]
         end
         container.squared_radius = container.arr_squared_r[fsize]
         container.fsize += 1         
         container.ssize = container.fsize     
-        return true;
-    else
-        return false
     end
+    return return_value
  end
 
 """
@@ -272,6 +275,7 @@ function push_fsize_zero(pivot::Array{Float64, 1}, container::Miniball)
          container.c[1, i] = container.q0[i]
      end
      container.arr_squared_r[1] = 0.0
+     return true
  end
  
 """
@@ -279,7 +283,7 @@ fsize != 1, calculate the miniball center and squared radius using the current
 pivot element.
 """
  function push_fsize_not_zero(pivot::Array{Float64, 1}, container::Miniball)
-    epsilon = mb_sqr(1e-21)
+    epsilon = pow_2(1e-21)
     d = container.dim
     q0 = container.q0
 
@@ -315,7 +319,7 @@ pivot element.
     # compute z_fsize
     container.z[fsize] = 0.0;
     for j=1:d
-        container.z[fsize] += mb_sqr(container.v[fsize, j])
+        container.z[fsize] += pow_2(container.v[fsize, j])
     end
     container.z[fsize] *= 2
     z = container.z
@@ -326,7 +330,7 @@ pivot element.
         # update c and arr_squared_r
         e = -arr_squared_r[fsize-1]
         for i=1:d
-            e += mb_sqr(pivot[i]-c[fsize-1, i])
+            e += pow_2(pivot[i]-c[fsize-1, i])
         end
         container.f[fsize] = e / z[fsize]
         f = container.f
