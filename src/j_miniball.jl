@@ -101,8 +101,8 @@ Example
     >> ball = j_miniball(points)    
 """
  function j_miniball{F<:AbstractFloat}(points::Array{F, 2}; timeit=false)
-     arr_dim, arr_len = size(points)
-     ball = Miniball(arr_dim, arr_len, points)
+     arr_len, arr_dim = size(points)
+     ball = Miniball(arr_len, arr_dim, points)
      if timeit
         @time miniball_pivot(ball)
      else 
