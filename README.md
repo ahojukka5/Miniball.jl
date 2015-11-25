@@ -3,7 +3,7 @@
 # MiniBall.jl is a part of JuliaFEM
 
 
-Julia package for a smallest enclosing sphere for points in arbitrary dimensions. Implementation is based on the Bernd Gärtner's C++ miniball (https://www.inf.ethz.ch/personal/gaertner/miniball.html). Presented implementation is pure Julia code and does not have any depencies. 
+Julia package for a smallest enclosing sphere for points in arbitrary dimensions. Implementation is based on the Bernd Gärtner's C++ miniball (https://www.inf.ethz.ch/personal/gaertner/miniball.html). Presented implementation is pure Julia code, does not have any depencies and has the same speed as the C++ implementation.
 
 ## To install MiniBall.jl
 1. First follow [Cxx.jl#installation](https://github.com/Keno/Cxx.jl#installation)
