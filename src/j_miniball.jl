@@ -46,8 +46,8 @@ Miniball container
     ssize::I                                    # Number of support points                               
   
     # Results
-    center::Array{F, 1}                      # Current center coordinates
-    squared_radius::F                            # Current squared radius
+    center::Array{F, 1}                         # Current center coordinates
+    squared_radius::F                           # Current squared radius
     c::Array{F, 2}              
     arr_squared_r::Array{F, 1}          
 
@@ -62,7 +62,7 @@ Miniball container
    Miniball(len, dim, points) = new(dim,                        # Dimensions
                                     len,                        # Number of points
                                     points,                     # Points in 2D array
-                                    [],                          # Support point index
+                                    [],                         # Support point index
                                     1,                          # Number of forced points  
                                     0,                          # Number of support points   
                                     zeros(F, (dim)),            # Current center coordinates
@@ -74,7 +74,7 @@ Miniball container
                                     zeros(F, (dim + 1)),        # f
                                     zeros(F, (dim + 1, dim)),   # v 
                                     zeros(F, (dim + 1, dim)),   # a
-                                    currier(dim))               # Loop function
+                                    currier(dim))               # index list
 end
 
 Miniball{I<:Integer, F<:AbstractFloat}(dim::I, len::I, points::Array{F, 2}) = Miniball{I, F}(dim, len, points)
@@ -105,7 +105,6 @@ Example
  function j_miniball{F<:AbstractFloat}(points::Array{F, 2}; timeit=false)
      arr_dim, arr_len = size(points)
      ball = Miniball(arr_dim, arr_len, points)
-     ball.center[:] = 0.0#ball.points[1, :]
      if timeit
         @time miniball_pivot(ball)
      else 
@@ -121,12 +120,9 @@ from B. Gaertner, Fast and Robust Smallest Enclosing Balls, ESA 1999,
 as a Algorithm 2: pivot_mb
 """
 function miniball_pivot(container::Miniball)
-    iter = 0
-    old_sqr_r = calculate_miniball(container, iter)
-    iter += 1
+    old_sqr_r = -100
     while (old_sqr_r < container.squared_radius)
-        old_sqr_r = calculate_miniball(container, iter)
-        iter += 1
+        old_sqr_r = calculate_miniball(container)
     end
  end
  
@@ -135,32 +131,22 @@ Function for creating the support vector. Function searches the most furthest
 point from the current center; the pivot point. Pivot point is added into support
 vector, which again is used to create the miniball.
 """
- function calculate_miniball(container::Miniball, iter)
+ function calculate_miniball(container::Miniball)
      dim   = container.dim
      len   = container.len
      arr_squared_r = container.squared_radius
-     pivot = container.points[1, :]
      fsize = container.fsize
      support_vector = container.support_vector
      points = container.points
      old_sqr_r = container.squared_radius
-     max_e = 0.0
-     c = vec(container.center)
-     @inbounds @simd for k=1:len
-         p = vec(points[k, :])
-         e = -arr_squared_r
-         @inbounds for l=1:dim
-            e += pow_2(p[l] - c[l])
-         end
-         if e > max_e
-             max_e = e
-             pivot = vec(container.points[k, :])
-         end
-     end
-     if max_e > 0.0
+     max_distance = 0.0
+     distance = 0.0
+     center = vec(container.center)
+     pivot, max_distance = find_pivot(len, points, center, arr_squared_r, dim)
+     if max_distance > 0.0
          if !(pivot in support_vector)
-             @assert container.fsize == 1
-             if push!(pivot, container)
+             @assert fsize == 1
+             if new_center_and_radius!(pivot, container)
                  miniball_support_points(container, pivot)
                  container.fsize -= 1
                  pivot_move_to_front(pivot, container)
@@ -170,6 +156,28 @@ vector, which again is used to create the miniball.
     old_sqr_r
 end
 
+function find_pivot{I<:Integer, F<:AbstractFloat}(len::I, points::Array{F, 2}, center::Array{F, 1}, arr_squared_r::F, dim::I)
+    max_distance = 0.0
+    pivot = zeros(F, dim)
+    point = zeros(F, dim)
+    for k=1:len
+        for m=1:dim # Fill point array
+            point[m] = points[k, m]
+        end
+        distance = -arr_squared_r
+        for l=1:dim # Calculate distance
+            distance += pow_2(point[l] - center[l])
+        end
+        if distance > max_distance
+            max_distance = distance
+            for n=1:dim
+                pivot[n] = points[k, n]
+            end
+        end
+    end
+    return pivot, max_distance
+end
+
 """
 Recursive function for creating a miniball using the support vector
 """
@@ -177,7 +185,6 @@ Recursive function for creating a miniball using the support vector
     dim   = container.dim
     fsize = container.fsize
     ssize = container.ssize
-    points = container.points
     center = vec(container.center)
     squared_radius = container.squared_radius
     
@@ -185,20 +192,18 @@ Recursive function for creating a miniball using the support vector
     if fsize == dim + 2
         return 
     end
-    id_ = 1
-    # @fastmath @inbounds 
+
     for (idx, support_point) in enumerate(container.support_vector)
         if support_point == end_support_vector
             break
         end
         if inside_current_ball(support_point, container.center, container.squared_radius, dim) 
-            if push!(support_point, container)
+            if new_center_and_radius!(support_point, container)
                 miniball_support_points(container, support_point) 
                 container.fsize -= 1
                 support_points_move_to_front(container, support_point, idx) 
             end
         end
-        id_ += 1
     end
  end
  
@@ -218,7 +223,7 @@ Appends a pivot point to the front of the support vector
 """
 function pivot_move_to_front{F<:AbstractFloat}(pivot::Array{F, 1}, container::Miniball)
     dim = container.dim
-    unshift!(container.support_vector, vec(pivot))
+    unshift!(container.support_vector, pivot)
     if length(container.support_vector) == (dim + 2)
         pop!(container.support_vector)
     end
@@ -228,13 +233,13 @@ function pivot_move_to_front{F<:AbstractFloat}(pivot::Array{F, 1}, container::Mi
 Checks, if given point is already inside the current miniball
 """
  function inside_current_ball{I<:Integer, F<:AbstractFloat}(coords::Array{F, 1}, center::Array{F, 1}, squared_radius::F, dim::I)
-    c = center
-    p = coords
-    e = -squared_radius
+    cntr = center
+    pnt = coords
+    dist = -squared_radius
     for i=1:dim
-        e += pow_2(p[i] - c[i])
+        dist += pow_2(pnt[i] - cntr[i])
     end
-    return e > 0.0
+    return dist > 0.0
  end
  
 """
@@ -244,7 +249,7 @@ http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf,
 from B. Gaertner, Fast and Robust Smallest Enclosing Balls, ESA 1999,
 from section 3. The Primitive Operation and after that.
 """
-function push!{F<:AbstractFloat}(pivot::Array{F, 1}, container::Miniball)
+function new_center_and_radius!{F<:AbstractFloat}(pivot::Array{F, 1}, container::Miniball)
     dim = container.dim
     return_value = true
     fsize = container.fsize
@@ -300,10 +305,11 @@ pivot element.
     # set v_fsize to Q_fsize
     container.v[fsize, :] = pivot - q0
     v = container.v
+
     # compute the a_{fsize,i}, i< fsize
     idx_list, not_empty = container.idx_list(fsize)
-    dim_arr = collect(1:d)
-    for i in idx_list
+
+    @fastmath for i in idx_list
         container.a[fsize, i] = 0.0;
         for j = 1:d
             container.a[fsize, i] += v[i, j] * v[fsize, j]
@@ -311,12 +317,14 @@ pivot element.
         container.a[fsize, i] *= 2 / z[i]
     end
     a = container.a
+
     # update v_fsize to Q_fsize-\bar{Q}_fsize
     for i in idx_list
         for j=1:d
             container.v[fsize, j] -= a[fsize, i] * v[i, j]
         end
     end
+
     # compute z_fsize
     container.z[fsize] = 0.0;
     for j=1:d
