@@ -13,9 +13,14 @@
 ```julia
 julia> using MiniBall
 
-# C++ miniball wrapper
-julia> cxx_miniball([1.0 0.0; 0.0 1.0])
-([0.5,0.5],0.7071067811865476)
+# C++ miniball wrapper. Returns only the center and squared radius
+julia> center, squared_radius = cxx_miniball([1.0 0.0; 0.0 1.0])
+
+julia> center
+[0.5,0.5]
+
+julia> squared_radius
+0.5
 
 julia> cxx_miniball([-1.0 0.0; 1.0 0.0; 0.0 1.0; 0.0 -1.0])
 ([0.0,0.0],1.0)
@@ -26,7 +31,7 @@ julia> cxx_miniball([-1.0 0.0 0.0; 1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 -1.0 0.0])
 julia> cxx_miniball(rand(1000000,3))
 ([0.503497331212874,0.4966413939942441,0.5004940446765603],0.8576670553673171)
 
-# Julia miniball implementation
+# Julia miniball implementation. Returns a Miniball type
 julia> ball = j_miniball(rand(1000, 3))
 
 julia> ball.center
