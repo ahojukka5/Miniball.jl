@@ -71,6 +71,6 @@ function cxx_miniball{T<:FloatingPoint}(arr::Array{T, 2})
     c_arr = allocate_jArr_to_cArr(n, d, pointer(arr'))
     squared_radius = calc_miniball(d, n, c_arr, pointer(output_arr))
     free_cArr(n, c_arr)
-    radius = sqrt(squared_radius)
+    radius = squared_radius
     return output_arr, radius
 end
