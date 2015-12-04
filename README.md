@@ -10,38 +10,34 @@ Julia package for a smallest enclosing sphere for points in arbitrary dimensions
 ```julia
 julia> using Miniball
 
-# C++ miniball wrapper. Returns only the center and squared radius
-julia> center, squared_radius = cxx_miniball([1.0 0.0; 0.0 1.0])
-
-julia> center
-[0.5,0.5]
-
-julia> squared_radius
-0.5
-
-julia> cxx_miniball([-1.0 0.0; 1.0 0.0; 0.0 1.0; 0.0 -1.0])
-([0.0,0.0],1.0)
-
-julia> cxx_miniball([-1.0 0.0 0.0; 1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 -1.0 0.0])
-([0.0,0.0,0.0],1.0)
-
-julia> cxx_miniball(rand(1000000,3))
-([0.503497331212874,0.4966413939942441,0.5004940446765603],0.8576670553673171)
-
-# Julia miniball implementation. Returns a Miniball type
-julia> ball = j_miniball(rand(1000, 3))
+julia> ball = miniball([1.0 0.0; 0.0 1.0])
 
 julia> ball.center
-3-element Array{Float64,1}:
- 0.518771
- 0.52564 
- 0.503871
+[0.5,0.5]
 
 julia> ball.squared_radius
-0.5032690087547128
+0.5
+
+julia> ball = miniball([-1.0 0.0; 1.0 0.0; 0.0 1.0; 0.0 -1.0])
+
+julia> ball.center
+([0.0,0.0],1.0)
+
+julia> ball.squared_radius
+1.0
+
+
+julia> ball = miniball(rand(1000000,3))
+
+julia> ball.center
+ [0.502234, 0.495934, 0.504458]
+
+julia> ball.squared_center
+0.7283212748080066
+
 ```
 Here is the original Miniball documentation http://www-oldurls.inf.ethz.ch/personal/gaertner/miniball.html
 
 [![Miniball log](http://www-oldurls.inf.ethz.ch/personal/gaertner/miniball/mb.gif)](http://www-oldurls.inf.ethz.ch/personal/gaertner/miniball.html)
 
-MiniBall.jl is wrapped using [Cxx.jl](https://github.com/Keno/Cxx.jl)
+MiniBall.jl also has a C++ implementation wrapped using [Cxx.jl](https://github.com/Keno/Cxx.jl)
