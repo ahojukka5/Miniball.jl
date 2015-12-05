@@ -1,5 +1,5 @@
 # This file is a part of JuliaFEM/MiniBall.jl.
-# License is MIT: see https://github.com/JuliaFEM/MiniBall.jl/blob/master/LICENSE.md
+# License is GPL: see https://github.com/JuliaFEM/MiniBall.jl/blob/master/LICENSE.md
 #
 #              Smallest enclosing hypersphere
 # 
