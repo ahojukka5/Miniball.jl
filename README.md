@@ -40,4 +40,4 @@ Here is the original Miniball documentation http://www-oldurls.inf.ethz.ch/perso
 
 [![Miniball log](http://www-oldurls.inf.ethz.ch/personal/gaertner/miniball/mb.gif)](http://www-oldurls.inf.ethz.ch/personal/gaertner/miniball.html)
 
-MiniBall.jl also has a C++ implementation wrapped using [Cxx.jl](https://github.com/Keno/Cxx.jl)
+Miniball.jl also has a C++ implementation wrapped using [Cxx.jl](https://github.com/Keno/Cxx.jl), see source [cxx_miniball.jl](https://github.com/JuliaFEM/Miniball.jl/blob/master/src/cxx_miniball.jl).
