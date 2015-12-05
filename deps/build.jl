@@ -1,5 +1,5 @@
 # This file is a part of JuliaFEM/MiniBall.
-# License is MIT: see https://github.com/JuliaFEM/MiniBall.jl/blob/master/LICENSE.md
+# License is GPL: see https://github.com/JuliaFEM/MiniBall.jl/blob/master/LICENSE.md
 
 cd(dirname(@__FILE__)) do
     here = dirname(@__FILE__)
