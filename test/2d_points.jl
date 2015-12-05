@@ -1,4 +1,4 @@
-using MiniBall
+using Miniball
 using Base.Test
 # Tests for (x, y) pairs. All the reference results have been calculated with 
 # the original C++ miniball
@@ -132,15 +132,15 @@ points_rand = [15.201026002809915 4.205742914106132;
 rand_ref_c= [33.5376 46.5017]
 rand_ref_r= sqrt(3005.97)
 
-ball = j_miniball(points_square)
+ball = miniball(points_square)
 square_sqr_rad = sqrt(ball.squared_radius) 
 square_center = ball.center
 
-ball = j_miniball(points_random)
+ball = miniball(points_random)
 random_sqr_rad = sqrt(ball.squared_radius) 
 random_center = ball.center
 
-ball = j_miniball(points_rand)
+ball = miniball(points_rand)
 rand_r = sqrt(ball.squared_radius) 
 rand_c = ball.center
 
