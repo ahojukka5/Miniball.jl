@@ -1,4 +1,4 @@
-using MiniBall
+using Miniball
 using Base.Test
 
 points_rand = [ -24.04188851104224 18.769646105815397 -26.34356278044138;
@@ -222,16 +222,16 @@ points_rr = [3.763755121261564 23.61986368402648 6.4704838354126775;
 rr_c = [6.08665 -0.996261 -1.49321] 
 rr_r = sqrt(2230.66)
 
-ball_1 = j_miniball(points_rand)
+ball_1 = miniball(points_rand)
 rand_calc_c = ball_1.center
 rand_calc_r = sqrt(ball_1.squared_radius) 
   
   
-ball_2 = j_miniball(points_cube)
+ball_2 = miniball(points_cube)
 cube_calc_c = ball_2.center
 cube_calc_r = sqrt(ball_2.squared_radius) 
 
-ball_3 = j_miniball(points_rr)
+ball_3 = miniball(points_rr)
 rr_calc_c = ball_3.center
 rr_calc_r = sqrt(ball_3.squared_radius)
 

@@ -154,6 +154,9 @@ vector, which again is used to create the miniball.
     old_sqr_r
 end
 
+"""
+Find pivot point
+"""
 function find_pivot{I<:Integer, F<:AbstractFloat}(len::I, points::Array{F, 2}, center::Array{F, 1}, arr_squared_r::F, dim::I)
     max_distance = 0.0
     pivot = zeros(F, dim)

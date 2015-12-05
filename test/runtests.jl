@@ -1,7 +1,7 @@
 # This file is a part of JuliaFEM/MiniBall.jl.
 # License is MIT: see https://github.com/JuliaFEM/MiniBall.jl/blob/master/LICENSE.md
 
-using MiniBall
+using Miniball
 using Base.Test
 
 include("2d_points.jl")
