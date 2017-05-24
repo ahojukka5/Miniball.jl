@@ -2,8 +2,7 @@
 
 # Miniball.jl is a part of JuliaFEM
 
-.. image:: https://travis-ci.org/JuliaFEM/Miniball.jl.svg?branch=master
-  :target: https://travis-ci.org/JuliaFEM/Miniball.jl
+[![Build Status](https://travis-ci.org/JuliaFEM/Miniball.jl.svg?branch=master)](https://travis-ci.org/JuliaFEM/Miniball.jl)
 
 Julia package for a smallest enclosing sphere for points in arbitrary dimensions. Implementation is based on the Bernd Gärtner's C++ miniball (https://www.inf.ethz.ch/personal/gaertner/miniball.html). Presented implementation is pure Julia code, does not have any depencies and has the same speed as the C++ implementation. The original C++ implementation is licensed under [GNU General Public License (GPLv3)](http://www.gnu.org/copyleft/gpl.html), which is why this implementation also has the same license.
 
