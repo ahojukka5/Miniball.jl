@@ -114,7 +114,7 @@ points_cube = [0.0  0.0 0.0;
                10.0  0.0 10.0;
                10.0 10.0 10.0;
                0.0 10.0 10.0]
-cube_center_ref = [5. 5. 5.] 
+cube_center_ref = [5. 5. 5.]
 cube_rad_ref = sqrt(75.)
 
 # points created with rand()*rand()*100
@@ -219,17 +219,17 @@ points_rr = [3.763755121261564 23.61986368402648 6.4704838354126775;
  -19.239080240002 12.319821258369842 33.09427849759176;
  6.1848230627832335 -36.970702599736725 -12.361210022368056;
 ]
-rr_c = [6.08665 -0.996261 -1.49321] 
+rr_c = [6.08665 -0.996261 -1.49321]
 rr_r = sqrt(2230.66)
 
 ball_1 = miniball(points_rand)
 rand_calc_c = ball_1.center
-rand_calc_r = sqrt(ball_1.squared_radius) 
-  
-  
+rand_calc_r = sqrt(ball_1.squared_radius)
+
+
 ball_2 = miniball(points_cube)
 cube_calc_c = ball_2.center
-cube_calc_r = sqrt(ball_2.squared_radius) 
+cube_calc_r = sqrt(ball_2.squared_radius)
 
 ball_3 = miniball(points_rr)
 rr_calc_c = ball_3.center
@@ -238,18 +238,18 @@ rr_calc_r = sqrt(ball_3.squared_radius)
 for i=1:3
       ref_center = rand_ref_c[i]
       cal_center = rand_calc_c[i]
-      @test_approx_eq_eps abs(ref_center - cal_center) 0.0 1e-4
-      @test_approx_eq_eps abs(rand_ref_r - rand_calc_r) 0.0 1e-4
-  
+      @test abs(ref_center - cal_center) ≈ 0.0 atol=0.0001
+      @test abs(rand_ref_r - rand_calc_r) ≈ 0.0 atol=0.0001
+
       ref_center_random = cube_center_ref[i]
       cal_center_random = cube_calc_c[i]
-      @test_approx_eq_eps abs(ref_center_random - cal_center_random) 0.0 1e-4
-      @test_approx_eq_eps abs(cube_rad_ref - cube_calc_r) 0.0 1e-4
- 
+      @test abs(ref_center_random - cal_center_random) ≈ 0.0 atol=0.0001
+      @test abs(cube_rad_ref - cube_calc_r) ≈ 0.0 atol=0.0001
+
      ref_center_random = rr_c[i]
      cal_center_random = rr_calc_c[i]
-     @test_approx_eq_eps abs(ref_center_random - cal_center_random) 0.0 1e-4
-     @test_approx_eq_eps abs(rr_calc_r - rr_r) 0 1e-4 
+     @test abs(ref_center_random - cal_center_random) ≈ 0.0 atol=0.0001
+     @test abs(rr_calc_r - rr_r) ≈ 0.0 atol=0.0001
 end
 
 println("3D points clear!")
