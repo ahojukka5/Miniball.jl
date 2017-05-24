@@ -2,10 +2,10 @@
 # License is GPL: see https://github.com/JuliaFEM/MiniBall.jl/blob/master/LICENSE.md
 #
 #              Smallest enclosing hypersphere
-# 
-#   This miniball a pure julia implementations of C++ miniball presented in 
+#
+#   This miniball a pure julia implementations of C++ miniball presented in
 #   https://www.inf.ethz.ch/personal/gaertner/miniball/MBContainer.hpp. This implementation
-#   is as fast as the C++ code and has only approximately 3/5 number of lines.    
+#   is as fast as the C++ code and has only approximately 3/5 number of lines.
 #
 #   The original C++ code is published under GNU General Public License
 #
@@ -40,14 +40,14 @@ MBContainer container
     len::I                                      # Number of points
     points::Array{F, 2}                         # Points in 2D array
     support_vector::Array{Array{F, 1}, 1}       # Support point index
-    fsize::I                                    # Number of forced points                                   
-    ssize::I                                    # Number of support points                               
-  
+    fsize::I                                    # Number of forced points
+    ssize::I                                    # Number of support points
+
     # Results
     center::Array{F, 1}                         # Current center coordinates
     squared_radius::F                           # Current squared radius
-    c::Array{F, 2}              
-    arr_squared_r::Array{F, 1}          
+    c::Array{F, 2}
+    arr_squared_r::Array{F, 1}
 
     #  helper arrays
     q0::Array{F, 1}
@@ -56,23 +56,25 @@ MBContainer container
     v::Array{F, 2}
     a::Array{F, 2}
     idx_list::Function
- 
-   MBContainer(len, dim, points) = new(dim,                        # Dimensions
-                                    len,                        # Number of points
-                                    points,                     # Points in 2D array
-                                    [],                         # Support point index
-                                    1,                          # Number of forced points  
-                                    0,                          # Number of support points   
-                                    zeros(F, (dim)),            # Current center coordinates
-                                    -1.0,                       # Current squared radius
-                                    zeros(F, (dim + 1, dim)),   # C arr
-                                    zeros(F, (dim + 1)),        # sqr arr
-                                    zeros(F, (dim)),            # q0
-                                    zeros(F, (dim + 1)),        # z
-                                    zeros(F, (dim + 1)),        # f
-                                    zeros(F, (dim + 1, dim)),   # v 
-                                    zeros(F, (dim + 1, dim)),   # a
-                                    currier(dim))               # index list
+
+    MBContainer{I, F}(len, dim, points) where {I, F} = new(
+        dim, # Dimensions
+        len, # Number of points
+        points, # Points in 2D array
+        [], # Support point index
+        1, # Number of forced points
+        0, # Number of support points
+        zeros(F, (dim)), # Current center coordinates
+        -1.0, # Current squared radius
+        zeros(F, (dim + 1, dim)), # C arr
+        zeros(F, (dim + 1)), # sqr arr
+        zeros(F, (dim)), # q0
+        zeros(F, (dim + 1)), # z
+        zeros(F, (dim + 1)), # f
+        zeros(F, (dim + 1, dim)), # v
+        zeros(F, (dim + 1, dim)), # a
+        currier(dim) # index list
+    )
 end
 
 MBContainer{I<:Integer, F<:AbstractFloat}(dim::I, len::I, points::Array{F, 2}) = MBContainer{I, F}(dim, len, points)
@@ -89,31 +91,32 @@ Returns
 -------
     container: MBContainer
         MBContainer type, which holds all the calculated values
-        
+
 Example
 -------
-2D-points (x, y)
-    >> points = rand(100, 2)
-    >> ball = miniball(points)
-    
-3D-points (x, y, z)
-    >> points = rand(100, 3)
-    >> ball = miniball(points)    
+2D-points (x, y):
+    points = rand(100, 2)
+    ball = miniball(points)
+
+3D-points (x, y, z):
+    points = rand(100, 3)
+    ball = miniball(points)
 """
- function miniball{F<:AbstractFloat}(points::Array{F, 2}; timeit=false)
+
+function miniball{F<:AbstractFloat}(points::Array{F, 2}; timeit=false)
      arr_len, arr_dim = size(points)
      ball = MBContainer(arr_len, arr_dim, points)
      if timeit
         @time miniball_pivot(ball)
-     else 
+     else
         miniball_pivot(ball)
     end
      return ball
  end
- 
+
 """
-Main loop for calculating miniball. Algorithm can be found from 
-http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf, 
+Main loop for calculating miniball. Algorithm can be found from
+http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf,
 from B. Gaertner, Fast and Robust Smallest Enclosing Balls, ESA 1999,
 as a Algorithm 2: pivot_mb
 """
@@ -123,7 +126,7 @@ function miniball_pivot(container::MBContainer)
         old_sqr_r = calculate_miniball(container)
     end
  end
- 
+
 """
 Function for creating the support vector. Function searches the most furthest
 point from the current center; the pivot point. Pivot point is added into support
@@ -188,33 +191,33 @@ Recursive function for creating a miniball using the support vector
     ssize = container.ssize
     center = vec(container.center)
     squared_radius = container.squared_radius
-    
+
     @assert fsize == ssize
     if fsize == dim + 2
-        return 
+        return
     end
 
     for (idx, support_point) in enumerate(container.support_vector)
         if support_point == end_support_vector
             break
         end
-        if inside_current_ball(support_point, container.center, container.squared_radius, dim) 
+        if inside_current_ball(support_point, container.center, container.squared_radius, dim)
             if new_center_and_radius!(support_point, container)
-                miniball_support_points(container, support_point) 
+                miniball_support_points(container, support_point)
                 container.fsize -= 1
-                support_points_move_to_front(container, support_point, idx) 
+                support_points_move_to_front(container, support_point, idx)
             end
         end
     end
  end
- 
- 
+
+
 """
-Moves the support points inside the support vector. Idea is to move the 
+Moves the support points inside the support vector. Idea is to move the
 points, which are most furthest apart from each other to the front of
 the vector. Points most closer to gather are at the end of the vector.
 """
-function support_points_move_to_front{I<:Integer, F<:AbstractFloat}(container::MBContainer, element::Array{F, 1}, id_::I) 
+function support_points_move_to_front{I<:Integer, F<:AbstractFloat}(container::MBContainer, element::Array{F, 1}, id_::I)
     splice!(container.support_vector, id_)
     unshift!(container.support_vector, element)
 end
@@ -229,7 +232,7 @@ function pivot_move_to_front{F<:AbstractFloat}(pivot::Array{F, 1}, container::MB
         pop!(container.support_vector)
     end
  end
- 
+
 """
 Checks, if given point is already inside the current miniball
 """
@@ -242,11 +245,11 @@ Checks, if given point is already inside the current miniball
     end
     return dist > 0.0
  end
- 
+
 """
 Function for creating a miniball. All the math related
-for calculating the miniball can be found from the 
-http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf, 
+for calculating the miniball can be found from the
+http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf,
 from B. Gaertner, Fast and Robust Smallest Enclosing Balls, ESA 1999,
 from section 3. The Primitive Operation and after that.
 """
@@ -254,20 +257,20 @@ function new_center_and_radius!{F<:AbstractFloat}(pivot::Array{F, 1}, container:
     dim = container.dim
     return_value = true
     fsize = container.fsize
-    
+
     if fsize == 1
         return_value = push_fsize_zero(pivot, container)
     else
         return_value = push_fsize_not_zero(pivot, container)
     end
-    
+
     if return_value == true
         for i=1:dim
             container.center[i] = container.c[fsize, i]
         end
         container.squared_radius = container.arr_squared_r[fsize]
-        container.fsize += 1         
-        container.ssize = container.fsize     
+        container.fsize += 1
+        container.ssize = container.fsize
     end
     return return_value
  end
@@ -284,7 +287,7 @@ function push_fsize_zero(pivot::Array{Float64, 1}, container::MBContainer)
      container.arr_squared_r[1] = 0.0
      return true
  end
- 
+
 """
 fsize != 1, calculate the miniball center and squared radius using the current
 pivot element.
@@ -346,7 +349,7 @@ pivot element.
         f = container.f
         for i=1:d
             container.c[fsize, i] = c[fsize-1, i] + f[fsize] * v[fsize, i]
-        end     
+        end
         container.arr_squared_r[fsize] = arr_squared_r[fsize-1] + e * f[fsize] / 2
     end
     return_val

@@ -1,10 +1,10 @@
 using Miniball
 using Base.Test
-# Tests for (x, y) pairs. All the reference results have been calculated with 
+# Tests for (x, y) pairs. All the reference results have been calculated with
 # the original C++ miniball
 
 # Random points
-points_random = [ 0.247206  0.110497; 
+points_random = [ 0.247206  0.110497;
                   0.876655  0.555887;
                   3.14755   3.32475;
                   0.551952  0.736911;
@@ -15,7 +15,7 @@ points_random = [ 0.247206  0.110497;
                   0.740699  0.802813;
                   0.96375   0.378811;
                   3.82      0.4]
-random_center_ref = [1.93228 1.50566 ] 
+random_center_ref = [1.93228 1.50566 ]
 random_rad_ref = sqrt(4.78596)
 
 # Square
@@ -23,7 +23,7 @@ points_square = [  0.0  0.0;
                   10.0  0.0;
                   10.0 10.0;
                    0.0 10.0]
-square_center_ref = [5. 5.] 
+square_center_ref = [5. 5.]
 square_rad_ref = sqrt(50.)
 
 # random pair, create with rand() * rand() * 100
@@ -133,34 +133,34 @@ rand_ref_c= [33.5376 46.5017]
 rand_ref_r= sqrt(3005.97)
 
 ball = miniball(points_square)
-square_sqr_rad = sqrt(ball.squared_radius) 
+square_sqr_rad = sqrt(ball.squared_radius)
 square_center = ball.center
 
 ball = miniball(points_random)
-random_sqr_rad = sqrt(ball.squared_radius) 
+random_sqr_rad = sqrt(ball.squared_radius)
 random_center = ball.center
 
 ball = miniball(points_rand)
-rand_r = sqrt(ball.squared_radius) 
+rand_r = sqrt(ball.squared_radius)
 rand_c = ball.center
 
 for i=1:2
     ref_center = square_center_ref[i]
     cal_center = square_center[i]
-    @test_approx_eq_eps abs(ref_center - cal_center) 0.0 1e-4
-    @test_approx_eq_eps abs(square_sqr_rad - square_rad_ref) 0.0 1e-4
+    @test abs(ref_center - cal_center) ≈ 0.0 atol=0.0001
+    @test abs(ref_center - cal_center) ≈ 0.0 atol=0.0001
+    @test abs(square_sqr_rad - square_rad_ref) ≈ 0.0 atol=0.0001
 
     ref_center_random = random_center_ref[i]
     cal_center_random = random_center[i]
-    @test_approx_eq_eps abs(ref_center_random - cal_center_random) 0.0 1e-4
-    @test_approx_eq_eps abs(random_sqr_rad - random_rad_ref) 0.0 1e-4
+    @test abs(ref_center_random - cal_center_random) ≈ 0.0 atol=0.0001
+    @test abs(random_sqr_rad - random_rad_ref) ≈ 0.0 atol=0.0001
 
     ref_center_random = rand_ref_c[i]
     cal_center_random = rand_c[i]
-    @test_approx_eq_eps abs(ref_center_random - cal_center_random) 0.0 1e-4
-    @test_approx_eq_eps abs(rand_r - rand_ref_r) 0.0 1e-4
+    @test abs(ref_center_random - cal_center_random) ≈ 0.0 atol=0.0001
+    @test abs(rand_r - rand_ref_r) ≈ 0.0 atol=0.0001
 end
 
 
 println("2D points clear!")
-

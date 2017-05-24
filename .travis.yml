@@ -3,11 +3,9 @@ os:
   - linux
   - osx
 julia:
-  - 0.4
+  - 0.6
   - nightly
 notifications:
   email: false
-# uncomment the following lines to override the default test script
-#script:
-#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("MiniBall"); Pkg.test("MiniBall"; coverage=true)'
+script:
+  - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("Miniball"); Pkg.test("Miniball"; coverage=true)'

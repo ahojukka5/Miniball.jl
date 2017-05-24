@@ -13,7 +13,7 @@ module Miniball
 #        println("No Cxx installed, only j_miniball available!")
 #    end
 
-    include("j_miniball.jl")
+    include("miniball.jl")
     export miniball
 
 end # module
