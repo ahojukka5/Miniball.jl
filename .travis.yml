@@ -3,8 +3,10 @@ os:
   - linux
 julia:
   - 0.6
-  - nightly
-notifications:
-  email: false
+before_script:
+  - julia --color=yes -e 'Pkg.clone("https://github.com/JuliaFEM/PkgTestSuite.jl.git")'
+  - julia --color=yes -e 'using PkgTestSuite; init()'
 script:
-  - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("Miniball"); Pkg.test("Miniball"; coverage=true)'
+  - julia --color=yes -e 'using PkgTestSuite; test()'
+after_success:
+  - julia --color=yes -e 'using PkgTestSuite; deploy()'
