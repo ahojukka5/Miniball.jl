@@ -4,7 +4,7 @@
 
 [![License](https://img.shields.io/github/license/JuliaFEM/Miniball.jl.svg?branch=master)](https://github.com/JuliaFEM/Miniball.jl/blob/master/LICENSE.md)[![Build Status](https://travis-ci.org/JuliaFEM/Miniball.jl.svg?branch=master)](https://travis-ci.org/JuliaFEM/Miniball.jl)[![Coverage Status](https://coveralls.io/repos/github/JuliaFEM/Miniball.jl/badge.svg?branch=master)](https://coveralls.io/github/JuliaFEM/Miniball.jl?branch=master)[![Issues](https://img.shields.io/github/issues/JuliaFEM/Miniball.jl.svg?branch=master)](https://github.com/JuliaFEM/Miniball.jl/issues)
 
-Julia package for a smallest enclosing sphere for points in arbitrary dimensions. Implementation is based on the Bernd Gärtner's C++ miniball (https://www.inf.ethz.ch/personal/gaertner/miniball.html). Presented implementation is pure Julia code, does not have any depencies and has the same speed as the C++ implementation. The original C++ implementation is licensed under [GNU General Public License (GPLv3)](http://www.gnu.org/copyleft/gpl.html), which is why this implementation also has the same license.
+This is a Julia package for finding the smallest enclosing sphere for a set of points in an arbitrary number of dimensions.  The implementation is based on Bernd Gärtner's [C++ Miniball](https://www.inf.ethz.ch/personal/gaertner/miniball.html) but is implemented entirely in Julia.  The original C++ implementation is licensed under [GNU General Public License (GPLv3)](http://www.gnu.org/copyleft/gpl.html), which is why this implementation also has the same license.
 
 ## Some examples of the usage
 

@@ -6,5 +6,7 @@ using Miniball
 
 makedocs(
     modules = [Miniball],
+    format = :html,
+    sitename = "Miniball",
     checkdocs = :all,
     strict = true)

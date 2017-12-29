@@ -2,3 +2,4 @@
 *.jl.mem
 deps/downloads/
 deps/usr/
+docs/build
