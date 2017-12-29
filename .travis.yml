@@ -10,5 +10,3 @@ script:
   - julia --color=yes -e 'using PkgTestSuite; test()'
 after_success:
   - julia --color=yes -e 'using PkgTestSuite; deploy()'
-  - julia -e 'Pkg.add("Documenter")'
-  - julia -e 'cd(Pkg.dir("Miniball")); include(joinpath("docs", "make.jl"))'
