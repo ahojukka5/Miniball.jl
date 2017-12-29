@@ -2,7 +2,7 @@
 
 # Miniball.jl is a part of JuliaFEM
 
-[![License](https://img.shields.io/github/license/JuliaFEM/Miniball.jl.svg?branch=master)](https://github.com/JuliaFEM/Miniball.jl/blob/master/LICENSE.md)[![Build Status](https://travis-ci.org/JuliaFEM/Miniball.jl.svg?branch=master)](https://travis-ci.org/JuliaFEM/Miniball.jl)[![Coverage Status](https://coveralls.io/repos/github/JuliaFEM/Miniball.jl/badge.svg?branch=master)](https://coveralls.io/github/JuliaFEM/Miniball.jl?branch=master)[![Issues](https://img.shields.io/github/issues/JuliaFEM/Miniball.jl.svg?branch=master)](https://github.com/JuliaFEM/Miniball.jl/issues)
+[![License](https://img.shields.io/github/license/JuliaFEM/Miniball.jl.svg?branch=master)](https://github.com/JuliaFEM/Miniball.jl/blob/master/LICENSE.md)[![Build Status](https://travis-ci.org/JuliaFEM/Miniball.jl.svg?branch=master)](https://travis-ci.org/JuliaFEM/Miniball.jl)[![](https://img.shields.io/badge/docs-latest-blue.svg)](http://juliafem.org/Miniball.jl/latest/)[![Coverage Status](https://coveralls.io/repos/github/JuliaFEM/Miniball.jl/badge.svg?branch=master)](https://coveralls.io/github/JuliaFEM/Miniball.jl?branch=master)[![Issues](https://img.shields.io/github/issues/JuliaFEM/Miniball.jl.svg?branch=master)](https://github.com/JuliaFEM/Miniball.jl/issues)
 
 This is a Julia package for finding the smallest enclosing sphere for a set of points in an arbitrary number of dimensions.  The implementation is based on Bernd Gärtner's [C++ Miniball](https://www.inf.ethz.ch/personal/gaertner/miniball.html) but is implemented entirely in Julia.  The original C++ implementation is licensed under [GNU General Public License (GPLv3)](http://www.gnu.org/copyleft/gpl.html), which is why this implementation also has the same license.
 
