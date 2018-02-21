@@ -13,7 +13,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Miniball.jl",
     "title": "Miniball.jl",
     "category": "section",
-    "text": "This is a Julia package for finding the smallest enclosing sphere for a set of points in an arbitrary number of dimensions.  The implementation is based on Bernd Gärtner's C++ Miniball but is implemented entirely in Julia.  The original C++ implementation is licensed under GNU General Public License (GPLv3), which is why this implementation also has the same license."
+    "text": "This is a Julia package for finding the smallest enclosing sphere for a set of points in an arbitrary number of dimensions.  The implementation is based on Bernd Gärtner\'s C++ Miniball but is implemented entirely in Julia.  The original C++ implementation is licensed under GNU General Public License (GPLv3), which is why this implementation also has the same license."
 },
 
 {
@@ -53,7 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Miniball.jl",
     "title": "Miniball.currier",
     "category": "Method",
-    "text": "currier(dim)\n\nCurrier function for creating a loop list in push_fsize_not_zero function. This function's only purpose is to reduce the amount of memory used.\n\n\n\n"
+    "text": "currier(dim)\n\nCurrier function for creating a loop list in push_fsize_not_zero function. This function\'s only purpose is to reduce the amount of memory used.\n\n\n\n"
 },
 
 {
