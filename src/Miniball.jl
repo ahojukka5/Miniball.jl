@@ -69,6 +69,10 @@ allocate_jArr_to_cArr(length, width, juliaArr) = @cxxnew allocate_c_arr(length, 
 calc_miniball(length, width, arr, outputArr) = @cxx calc_mini(length, width, arr, outputArr)
 free_cArr(length, c_arr) = @cxx free_c_array(length, c_arr)
 
+struct Ball
+    center
+    squared_radius
+end
 
 """
 Smallest enclosing sphere
@@ -80,8 +84,10 @@ function miniball(arr::Array{<:AbstractFloat, 2})
     c_arr = allocate_jArr_to_cArr(n, d, pointer(arr'))
     squared_radius = calc_miniball(d, n, c_arr, pointer(output_arr))
     free_cArr(n, c_arr)
-    radius = sqrt(squared_radius)
-    return output_arr, radius
+    
+    Ball(output_arr, squared_radius)
 end
+
+
 
 end # module
