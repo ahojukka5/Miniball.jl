@@ -1,14 +1,13 @@
+# This file is a part of JuliaFEM/MiniBall.jl.
+# License is GPL: see https://github.com/JuliaFEM/MiniBall.jl/blob/master/LICENSE.md
+
 function random_points(center, radius, n, boundary::Bool)
     dims = length(center), n
     dim = length(center)
     pts = zeros(n, dim)
     for row in indices(pts,1)
         dir = normalize(randn(dim))
-        if boundary
-            r = rand() * radius
-        else
-            r = radius
-        end
+        r = boundary ? radius : rand() * radius
         pts[row,:] .= center + r*dir
     end
     pts
