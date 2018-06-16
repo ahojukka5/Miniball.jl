@@ -115,7 +115,7 @@ end
 
 fsize == 1, insert pivot element to q0 and c vectors
 """
-function push_fsize_zero(pivot::Array{Float64, 1}, container::MBContainer)
+function push_fsize_zero(pivot::Array{<:AbstractFloat, 1}, container::MBContainer)
      d = container.dim
      for i = 1:d
          container.q0[i] = pivot[i]
@@ -131,7 +131,7 @@ function push_fsize_zero(pivot::Array{Float64, 1}, container::MBContainer)
 fsize != 1, calculate the miniball center and squared radius using the current
 pivot element.
 """
- function push_fsize_not_zero(pivot::Array{Float64, 1}, container::MBContainer)
+function push_fsize_not_zero(pivot::Array{<:AbstractFloat, 1}, container::MBContainer)
     epsilon = pow_2(1e-21)
     d = container.dim
     q0 = container.q0
