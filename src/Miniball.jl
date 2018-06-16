@@ -1,12 +1,13 @@
 # This file is a part of JuliaFEM/MiniBall.jl.
 # License is MIT: see https://github.com/JuliaFEM/MiniBall.jl/blob/master/LICENSE.md
 
-module MiniBall
+module Miniball
 using Cxx
 
 export miniball
 
-const path_to_miniball = joinpath(Pkg.dir("MiniBall"),"deps/usr/include/Miniball.hpp")
+const path_to_miniball = Pkg.dir("Miniball","deps", "Miniball.hpp")
+
 cxxinclude(path_to_miniball)
 
 cxx"""
@@ -72,7 +73,7 @@ free_cArr(length, c_arr) = @cxx free_c_array(length, c_arr)
 """
 Smallest enclosing sphere
 """
-function miniball{T<:FloatingPoint}(arr::Array{T, 2})
+function miniball(arr::Array{<:AbstractFloat, 2})
     n, d = size(arr)
     output_arr = zeros(d)
     radius = 0.0
