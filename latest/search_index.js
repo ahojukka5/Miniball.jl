@@ -113,7 +113,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Miniball.push_fsize_not_zero-Tuple{Array{Float64,1},Miniball.MBContainer}",
+    "location": "index.html#Miniball.push_fsize_not_zero-Tuple{Array{#s20,1} where #s20<:AbstractFloat,Miniball.MBContainer}",
     "page": "Miniball.jl",
     "title": "Miniball.push_fsize_not_zero",
     "category": "method",
@@ -121,7 +121,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Miniball.push_fsize_zero-Tuple{Array{Float64,1},Miniball.MBContainer}",
+    "location": "index.html#Miniball.push_fsize_zero-Tuple{Array{#s27,1} where #s27<:AbstractFloat,Miniball.MBContainer}",
     "page": "Miniball.jl",
     "title": "Miniball.push_fsize_zero",
     "category": "method",
