@@ -25,7 +25,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Miniball.miniball-Union{Tuple{Array{F,2}}, Tuple{F}} where F<:AbstractFloat",
+    "location": "index.html#Miniball.miniball-Tuple{Array{#s15,2} where #s15<:AbstractFloat}",
     "page": "Miniball.jl",
     "title": "Miniball.miniball",
     "category": "method",
