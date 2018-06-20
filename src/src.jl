@@ -341,8 +341,7 @@ function miniball_pivot(container::MBContainer)
     while (old_sqr_r < container.squared_radius)
         old_sqr_r = calculate_miniball(container)
     end
- end
-
+end
 
 """
     miniball(points)
@@ -369,13 +368,27 @@ Example
     points = rand(100, 3)
     ball = miniball(points)
 """
-function miniball{F<:AbstractFloat}(points::Array{F, 2}; timeit=false)
-     arr_len, arr_dim = size(points)
-     ball = MBContainer(arr_len, arr_dim, points)
-     if timeit
-        @time miniball_pivot(ball)
-     else
+function miniball(points::Array{<:AbstractFloat,2}; 
+                   timeit::Bool=false,
+                   check::Bool=true,
+                   check_atol::Real=0,
+                   check_rtol::Real=Base.rtoldefault(eltype(points)))
+
+    arr_len, arr_dim = size(points)
+    ball = MBContainer(arr_len, arr_dim, points)
+    if timeit
+       @time miniball_pivot(ball)
+    else
         miniball_pivot(ball)
     end
-     return ball
- end
+    if check
+        for row in indices(points,1)
+            pt = @view points[row,:]
+            r2 = sum(abs2,pt - ball.center)
+            r2 <= ball.squared_radius ||
+            isapprox(r2,ball.squared_radius, atol=check_atol, rtol=check_rtol) ||
+            error("Cannot find miniball around points. This is probably due to rounding errors.")
+        end
+    end
+    ball
+end
