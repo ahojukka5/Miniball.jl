@@ -45,7 +45,7 @@ end
             for boundary in [true, false]
                 center, radius = random_ball(dim)
                 pts = random_points(center, radius, n, boundary)
-                ball = miniball(pts)
+                ball = miniball(pts, check=false)
                 r = sqrt(ball.squared_radius)
                 inside = check_points_approx_inside(ball.center, r, pts)
                 if inside
