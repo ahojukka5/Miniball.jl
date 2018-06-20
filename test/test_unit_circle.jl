@@ -5,6 +5,8 @@ using Miniball
 using Base.Test
 
 # See: https://github.com/JuliaFEM/Miniball.jl/pull/18
+# and https://gist.github.com/TeroFrondelius/092c1f99584f0d4420100d6b0f24a583
+
 @testset "unit circle bug failure points" begin
     pts = Array{Float64}(5,2,7)
 
@@ -53,5 +55,28 @@ using Base.Test
     for i = 1:7
         mb = miniball(pts[:,:,i])
         @test_broken isapprox(mb.center,[0.0;0.0];atol=10*eps())
+    end
+end
+
+@testset "stastical unit circle test" begin
+    pts = Array{Float64}(5,2)
+    for k in 1:100000
+        for i in 1:4
+            angle = rand()*2*pi
+            x = cos(angle)
+            y = sin(angle)
+            pts[i,:] = [x y]
+            if i == 1
+              pts[end,:] = [cos(angle + pi) sin(angle + pi)]
+            end
+        end
+
+        mb = miniball(pts)
+        origo = isapprox(mb.center,[0.0;0.0];atol=10*eps())
+        if origo
+            @test origo
+        else
+            @test_broken origo
+        end
     end
 end
