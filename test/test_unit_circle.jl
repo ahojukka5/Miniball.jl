@@ -53,7 +53,7 @@ using Base.Test
                   -0.6655564730601352  0.746347493576386]
 
     for i = 1:7
-        mb = miniball(pts[:,:,i])
+        mb = miniball(pts[:,:,i], check=false)
         @test_broken isapprox(mb.center,[0.0;0.0];atol=10*eps())
     end
 end
@@ -71,7 +71,7 @@ end
             end
         end
 
-        mb = miniball(pts)
+        mb = miniball(pts, check=false)
         origo = isapprox(mb.center,[0.0;0.0];atol=10*eps())
         if origo
             @test origo
