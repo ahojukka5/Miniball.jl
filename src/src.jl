@@ -338,7 +338,13 @@ as Algorithm 2: pivot_mb
 """
 function miniball_pivot(container::MBContainer)
     old_sqr_r = -100
-    while (old_sqr_r < container.squared_radius)
+    loops_without_progress = 0
+    while (loops_without_progress < 2)
+        if (old_sqr_r < container.squared_radius)
+            loops_without_progress = 0
+        else
+            loops_without_progress += 1
+        end
         old_sqr_r = calculate_miniball(container)
     end
 end
@@ -368,7 +374,7 @@ Example
     points = rand(100, 3)
     ball = miniball(points)
 """
-function miniball(points::Array{<:AbstractFloat,2}; 
+function miniball(points::Array{<:AbstractFloat,2};
                    timeit::Bool=false,
                    check::Bool=true,
                    check_atol::Real=0,
