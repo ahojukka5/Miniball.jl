@@ -14,8 +14,6 @@
 MBContainer container
 """
  type MBContainer
-    dim :: Int64                               # Dimensions
-    len :: Int64                               # Number of points
     points :: Matrix{Float64}                  # Points in 2D array
     support_vector :: Vector{Vector{Float64}}  # Support point index
     fsize :: Int64                             # Number of forced points
@@ -39,8 +37,6 @@ end
 function MBContainer(points)
     len, dim = size(points)
     ball = MBContainer(
-        dim, # Dimensions
-        len, # Number of points
         points, # Points in 2D array
         [], # Support point index
         1, # Number of forced points
@@ -62,17 +58,18 @@ end
 """
     new_center_and_radius!(pivot, container)
 
-Function for creating a miniball. All the math related
-for calculating the miniball can be found from the
-http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf,
-from B. Gaertner, Fast and Robust Smallest Enclosing Balls, ESA 1999,
-from section 3. The Primitive Operation and after that.
+Function for creating a miniball. All the math related for calculating the
+miniball can be found from the [1], Section 3, "The Primite Operation".
+
+[1] B. Gaertner. Fast and Robust Smallest Enclosing Balls, ESA 1999. Online at:
+    http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf,
 """
 function new_center_and_radius!(pivot, container)
 
     fsize = container.fsize
+    ssize = container.ssize
     a = container.a
-    d = container.dim
+    d = size(container.points, 2)
     q0 = container.q0
     c = container.c
     z = container.z
@@ -80,38 +77,34 @@ function new_center_and_radius!(pivot, container)
     f = container.f
     arr_squared_r = container.arr_squared_r
     squared_radius = container.squared_radius
+    center = container.center
 
     if fsize == 1
-        container.q0[:] = container.c[1,:] = pivot[:]
-        container.arr_squared_r[1] = 0.0
+        q0[:] = c[1,:] = pivot[:]
+        arr_squared_r[1] = 0.0
     else
         return_val = true
 
         # set v_fsize to Q_fsize
         v[fsize, :] = pivot - q0
 
-        g(x) = x < fsize
-        idx_list = filter(g, 2:d)
-
-        # compute the a_{fsize,i}, i< fsize
-        # update v_fsize to Q_fsize-\bar{Q}_fsize
-        for i in idx_list
-            container.a[fsize, i] = 2.0 * dot(v[i, :], v[fsize, :]) / z[i]
-            container.v[fsize, :] -= a[fsize, i] * v[i, :]
+        # compute the a_{fsize,i}, if i < fsize
+        # update v_fsize to Q_fsize - \bar{Q}_fsize
+        for i=2:fsize-1
+            a[fsize, i] = 2.0 * dot(v[i, :], v[fsize, :]) / z[i]
+            v[fsize, :] -= a[fsize, i] * v[i, :]
         end
 
-        # compute z_fsize
-        container.z[fsize] = 2*norm(container.v[fsize, :])^2
-        # reject push if z_fsize too small
-        z[fsize] < eps(Float64)*squared_radius && return false
-        # update c and arr_squared_r
         e_var = norm(pivot[:]-c[fsize-1, :])^2 - arr_squared_r[fsize-1]
-        container.f[fsize] = e_var / z[fsize]
-        container.c[fsize, :] = c[fsize-1, :] + f[fsize] * v[fsize, :]
-        container.arr_squared_r[fsize] = arr_squared_r[fsize-1] + 0.5 * e_var * f[fsize]
+        z[fsize] = 2.0 * norm(v[fsize, :])^2
+        # compute z_fsize and reject push if z_fsize is too small
+        isapprox(z[fsize], 0.0) && return false
+        f[fsize] = e_var / z[fsize]
+        c[fsize, :] = c[fsize-1, :] + f[fsize] * v[fsize, :]
+        arr_squared_r[fsize] = arr_squared_r[fsize-1] + 0.5 * e_var * f[fsize]
     end
 
-    container.center[:] = container.c[fsize,:]
+    center[:] = c[fsize,:]
     container.squared_radius = container.arr_squared_r[fsize]
     container.fsize += 1
     container.ssize = container.fsize
@@ -127,7 +120,8 @@ Recursive function for creating a miniball using the support vector.
  function miniball_support_points(container, end_support_vector)
 
     @assert container.fsize == container.ssize
-    container.fsize == container.dim + 2 && return nothing
+    dim = size(container.points, 2)
+    container.fsize == dim + 2 && return nothing
 
     for (idx, support_point) in enumerate(container.support_vector)
         support_point == end_support_vector && break
@@ -159,8 +153,9 @@ function miniball(points; max_iterations=20)
              new_center_and_radius!(pivot, ball)
              miniball_support_points(ball, pivot)
              ball.fsize -= 1
+             dim = size(ball.points, 2)
              unshift!(ball.support_vector, pivot)
-             if length(ball.support_vector) == (ball.dim + 2)
+             if length(ball.support_vector) == (dim + 2)
                  pop!(ball.support_vector)
              end
          end
