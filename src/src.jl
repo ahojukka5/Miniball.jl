@@ -14,23 +14,23 @@
 MBContainer container
 """
  type MBContainer
-    points :: Matrix{Float64}                  # Points in 2D array
-    support_vector :: Vector{Vector{Float64}}  # Support point index
+    points :: Matrix{AbstractFloat}                  # Points in 2D array
+    support_vector :: Vector{Vector{AbstractFloat}}  # Support point index
     fsize :: Int64                             # Number of forced points
     ssize :: Int64                             # Number of support points
 
     # Results
-    center :: Vector{Float64}                  # Current center coordinates
-    squared_radius :: Float64                  # Current squared radius
-    c :: Matrix{Float64}
-    arr_squared_r :: Vector{Float64}
+    center :: Vector{AbstractFloat}                  # Current center coordinates
+    squared_radius :: AbstractFloat                  # Current squared radius
+    c :: Matrix{AbstractFloat}
+    arr_squared_r :: Vector{AbstractFloat}
 
     #  helper arrays
-    q0 :: Vector{Float64}
-    z :: Vector{Float64}
-    f :: Vector{Float64}
-    v :: Matrix{Float64}
-    a :: Matrix{Float64}
+    q0 :: Vector{AbstractFloat}
+    z :: Vector{AbstractFloat}
+    f :: Vector{AbstractFloat}
+    v :: Matrix{AbstractFloat}
+    a :: Matrix{AbstractFloat}
 
 end
 
@@ -139,30 +139,42 @@ Recursive function for creating a miniball using the support vector.
     end
  end
 
-function miniball(points; max_iterations=20)
-     ball = MBContainer(points)
-     fsize = ball.fsize
-     support_vector = ball.support_vector
-     r2_prev = -Inf
-     for i=1:max_iterations
-         center = vec(ball.center)
-         pivot_idx = indmax(norm(points[k,:]-center) for k=1:size(points,1))
-         pivot = points[pivot_idx, :]
-         if !(pivot in support_vector)
-             @assert fsize == 1
-             new_center_and_radius!(pivot, ball)
-             miniball_support_points(ball, pivot)
-             ball.fsize -= 1
-             dim = size(ball.points, 2)
-             unshift!(ball.support_vector, pivot)
-             if length(ball.support_vector) == (dim + 2)
-                 pop!(ball.support_vector)
-             end
-         end
-         dr2 = ball.squared_radius - r2_prev
-         println("Radius: $(sqrt(ball.squared_radius)), ch: $dr2")
-         isapprox(dr2, 0.0) && break
-         r2_prev = copy(ball.squared_radius)
-     end
-     return ball
+function miniball(points; max_iterations=30, check=false, check_atol=1e-15, check_rtol=1e-15, debug=false)
+    ball = MBContainer(points)
+    fsize = ball.fsize
+    support_vector = ball.support_vector
+    r2_prev = -Inf
+    for i=1:max_iterations
+        center = vec(ball.center)
+        pivot_idx = indmax(norm(points[k,:]-center) for k=1:size(points,1))
+        pivot = points[pivot_idx, :]
+        if !(pivot in support_vector)
+            @assert fsize == 1
+            new_center_and_radius!(pivot, ball)
+            miniball_support_points(ball, pivot)
+            ball.fsize -= 1
+            dim = size(ball.points, 2)
+            unshift!(ball.support_vector, pivot)
+            if length(ball.support_vector) == (dim + 2)
+                pop!(ball.support_vector)
+            end
+        end
+        dr2 = ball.squared_radius - r2_prev
+        if debug
+            println("Radius: $(sqrt(ball.squared_radius)), ch: $dr2")
+        end
+        isapprox(dr2, 0.0) && break
+        r2_prev = copy(ball.squared_radius)
+    end
+    if check
+        ball_rad = sqrt(ball.squared_radius)
+        for row in indices(points,1)
+            pt = @view points[row,:]
+            r_check = norm(pt - ball.center)
+            r_check <= ball_rad ||
+                isapprox(r_check, ball_rad, atol=check_atol, rtol=check_rtol) ||
+                println("Cannot find miniball around points. This is probably due to rounding errors: ", r_check, " ", ball_rad)
+        end
+    end
+    return ball
 end

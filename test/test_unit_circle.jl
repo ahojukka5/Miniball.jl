@@ -7,7 +7,7 @@ using Base.Test
 # See: https://github.com/JuliaFEM/Miniball.jl/pull/18
 # and https://gist.github.com/TeroFrondelius/092c1f99584f0d4420100d6b0f24a583
 
-@testset "unit circle bug failure points" begin
+@testset "Unit circle bug failure points" begin
     pts = Array{Float64}(5,2,7)
 
     pts[:,:,1] = [-0.5479088748959597  0.8365380235292617;
@@ -54,29 +54,78 @@ using Base.Test
 
     for i = 1:7
         mb = miniball(pts[:,:,i], check=false)
-        @test_broken isapprox(mb.center,[0.0;0.0];atol=10*eps())
+        ii, ij = mb.center
+        orig1 = isapprox(ii, 0.0, atol=1e-8)
+        orig2 = isapprox(ij, 0.0, atol=1e-8)
+        if orig1 && orig2
+            @test orig1
+        else
+            @test_broken orig1
+        end
     end
 end
 
-@testset "stastical unit circle test" begin
-    pts = Array{Float64}(5,2)
-    for k in 1:100000
-        for i in 1:4
-            angle = rand()*2*pi
-            x = cos(angle)
-            y = sin(angle)
-            pts[i,:] = [x y]
-            if i == 1
-              pts[end,:] = [cos(angle + pi) sin(angle + pi)]
-            end
+@testset "Test center in unit circle test" begin
+
+    for k in 1:10000
+        # Making sure, that 0,0 is the center by creating points in unit circle:
+        # angle1 = basepoint
+        # andle2 = basepoint + 1/3 * (2*pi)
+        # andle3 = basepoint + 2/3 * (2*pi)
+        angle1 = rand() * 2 * pi
+        angle2 = angle1 + 1/3 * (2 * pi)
+        angle3 = angle1 + 2/3 * (2 * pi)
+
+        # Create boundary points
+        x1 = cos(angle1)
+        y1 = sin(angle1)
+
+        x2 = cos(angle2)
+        y2 = sin(angle2)
+
+        x3 = cos(angle3)
+        y3 = sin(angle3)
+
+        # Select n points for test set and initialize array
+        n_points = rand(4:100, 1, 1)[1]
+        indeces = range(1, n_points)
+        pts = zeros(n_points, 2)
+
+        # We do not want to set boundary points into arrays head, but rather in random point
+        shuffled_indeces = shuffle(indeces)
+
+        # pop points for indeces
+        idx_1 = pop!(shuffled_indeces)
+        idx_2 = pop!(shuffled_indeces)
+        idx_3 = pop!(shuffled_indeces)
+
+        # add points
+        pts[idx_1, :] = [x1 y1]
+        pts[idx_2, :] = [x2 y2]
+        pts[idx_3, :] = [x3 y3]
+
+        # Add more points
+        for i in shuffled_indeces
+            angle = rand() * 2 * pi
+
+            # Rand added here, since we do not want to add more points to boundary
+            x = cos(angle) * abs(rand())
+            y = sin(angle) * abs(rand())
+            @assert abs(x) <= 1.0
+            @assert abs(y) <= 1.0
+            # pts[i, :] = [x y]
         end
 
+        # Calculate miniball and check origin
         mb = miniball(pts, check=false)
-        origo = isapprox(mb.center,[0.0;0.0];atol=10*eps())
-        if origo
-            @test origo
+        ii, ij = mb.center
+        orig1 = isapprox(ii, 0.0, atol=1e-8)
+        orig2 = isapprox(ij, 0.0, atol=1e-8)
+
+        if orig1 && orig2
+            @test orig1
         else
-            @test_broken origo
+            @test_broken orig1
         end
     end
 end
