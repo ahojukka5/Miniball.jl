@@ -1,3 +1,5 @@
+This repo has some nasty bug, see broken tests. After bug hunt a decission to refactor led to the rewriting of the package, which gave the opportunity to change the license. Development will continue in https://github.com/JuliaFEM/BoundingSphere.jl check if realesed version exists and move using the BoundingSphere.jl instead. 
+
 [![JuliaFEMLogo](https://github.com/JuliaFEM/JuliaFEM.jl/blob/master/docs/logo/JuliaFEMLogo_128x128.png)](http://www.juliafem.org)
 
 # Miniball.jl is a part of JuliaFEM
